@@ -79,7 +79,7 @@ public class MenuActivity extends ActionBarActivity {
                 } else {
                     Log.e("MenuActivty", "Conexão com sucesso");
                 }
-                // startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
+             
             }
         });
     }
