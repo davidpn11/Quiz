@@ -1,6 +1,9 @@
 package quiz.com.david.quiz;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,17 +14,27 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.apache.http.message.BasicNameValuePair;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 
 
 public class MenuActivity extends ActionBarActivity {
 
     private Button button;
     private EditText player;
-    private TextView retorno;
+    private TextView area_resposta;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +44,7 @@ public class MenuActivity extends ActionBarActivity {
 
         button = (Button) findViewById(R.id.conecta);
         player = (EditText) findViewById(R.id.player);
-        retorno = (TextView) findViewById(R.id.retorno);
+        area_resposta = (TextView) findViewById(R.id.retorno);
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -45,17 +58,28 @@ public class MenuActivity extends ActionBarActivity {
                     return;
                 }
 
-                //retorno.setText("Aguardando outros jogadores....");
-             /*   ConexaoTask ConexaoTask = new ConexaoTask(
-                        "10.0.2.2",8888,enviaPlayer);
-                String x = "";
-                try {
-                     x = ConexaoTask.execute().get();
-                }catch (Exception e){
+                String stringUrl = "http://10.0.2.2:8888/Quiz/rpc_quiz2.php";
+                // "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
+                ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
+                if (networkInfo != null && networkInfo.isConnected()) {
+
+
+
+                    try {
+                        String resp;
+                        ConexaoTask conexaoTask = new ConexaoTask();
+                        resp = conexaoTask.execute(stringUrl).get();
+                        Log.e("GET_Teste",resp);
+                    }catch (Exception e){
+
+                    }
+
+                } else {
+                    Log.e("MenuActivty", "Conexão com sucesso");
                 }
-                retorno.setText(x);*/
-                 startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
+                // startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
             }
         });
     }
@@ -65,14 +89,6 @@ public class MenuActivity extends ActionBarActivity {
 
         String endereco,mensagem;
         int porta;
-
-
-       /* ConexaoTask(String add,int port, String msg){
-            endereco = add;
-            porta = port;
-            mensagem = msg;
-        }*/
-
 
 
         @Override
@@ -85,15 +101,16 @@ public class MenuActivity extends ActionBarActivity {
 
             Log.e("DoInBack","");
             try {
-                socket = new Socket(endereco, porta);
+               /* socket = new Socket(endereco, porta);
                 dataInputStream = new DataInputStream(socket.getInputStream());
                 dataOutputStream = new DataOutputStream(socket.getOutputStream());
 
                 dataOutputStream.writeUTF(mensagem);
                 resposta = dataInputStream.readUTF();
                 Log.e("RESPOSTA",resposta);
-                return resposta;
+                return resposta;  */
 
+                return iniciaConn(urls[0],player.getText().toString());
             } catch (IOException e) {
                 e.printStackTrace();
 
@@ -107,17 +124,92 @@ public class MenuActivity extends ActionBarActivity {
             //Log.v("Result-onPostExecute: ",result);
 
             if(result.equals("error")){
-                retorno.setText("Problema na conexão");
+                area_resposta.setText("Problema na conexão");
 
-            }else if(result.equals("ready")){
-                retorno.setText("Inicializando jogo...");
+            } else if (result.equals("ready")){
+                area_resposta.setText("Inicializando jogo...");
                 startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
             }
 
             else
-                retorno.setText(result+" jogadores restantes para começar o jogo...");
+                area_resposta.setText(result+" jogadores restantes para começar o jogo...");
 
         }
+
+
+    }
+
+    private String iniciaConn(String myurl,String player_name) throws IOException {
+
+        InputStream input = null;
+
+        try {
+
+            //inicia o obj url e seta coisas na conexao http
+            URL url = new URL(myurl);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setInstanceFollowRedirects(true);
+
+            conn.setUseCaches(false);
+            conn.setReadTimeout(10000 /* milliseconds */);
+            conn.setConnectTimeout(15000 /* milliseconds */);
+
+
+
+
+
+            BasicNameValuePair par = new BasicNameValuePair("rpc_message",player_name);
+
+
+
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(
+                    new OutputStreamWriter(os, "UTF-8"));
+            Log.e("Par.toString", par.toString());
+            writer.write(par.toString());
+
+            writer.flush();
+            writer.close();
+            os.close();
+
+            conn.connect();
+
+
+            int HttpResult = conn.getResponseCode();
+            StringBuilder sbuilder = new StringBuilder();
+
+
+
+            if(HttpResult == HttpURLConnection.HTTP_OK){
+
+                input = conn.getInputStream();
+                String line;
+                BufferedReader buf = new BufferedReader(new InputStreamReader(input));
+
+                while ((line = buf.readLine()) != null) {
+                    sbuilder.append(line);
+                }
+                Log.v("Resposta: ", "Teste: " + sbuilder.toString());
+                //textView.setText(sbuilder.toString());
+
+
+                return (sbuilder.toString());
+
+            }
+
+
+        }catch (IOException e){
+            Log.e("Conn: ","Erro na Transferencia");
+        }
+        finally {
+            if(input != null){
+                input.close();
+            }
+        }
+        return null;
 
 
     }
