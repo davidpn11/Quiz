@@ -67,11 +67,11 @@ public class MenuActivity extends ActionBarActivity {
         int porta;
 
 
-        ConexaoTask(String add,int port, String msg){
+       /* ConexaoTask(String add,int port, String msg){
             endereco = add;
             porta = port;
             mensagem = msg;
-        }
+        }*/
 
 
 
