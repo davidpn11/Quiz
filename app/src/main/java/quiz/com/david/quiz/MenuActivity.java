@@ -50,7 +50,7 @@ public class MenuActivity extends ActionBarActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                button.setText("Atualizar");
                 String enviaPlayer = player.getText().toString();
 
                 if (enviaPlayer.equals("")) {
@@ -66,20 +66,27 @@ public class MenuActivity extends ActionBarActivity {
                 if (networkInfo != null && networkInfo.isConnected()) {
 
 
+                //String result;
 
-                    try {
-                        String resp;
-                        ConexaoTask conexaoTask = new ConexaoTask();
-                        resp = conexaoTask.execute(stringUrl).get();
-                        Log.e("GET_Teste",resp);
-                    }catch (Exception e){
 
-                    }
+
+                          //  button.setClickable(false);
+                          //  button.setEnabled(true);
+                            ConexaoTask conexaoTask = new ConexaoTask();
+                            conexaoTask.execute(stringUrl);
+
+
+
+
+
+
+
+
 
                 } else {
                     Log.e("MenuActivty", "Conexão com sucesso");
                 }
-             
+
             }
         });
     }
@@ -138,6 +145,7 @@ public class MenuActivity extends ActionBarActivity {
 
 
     }
+
 
     private String iniciaConn(String myurl,String player_name) throws IOException {
 
