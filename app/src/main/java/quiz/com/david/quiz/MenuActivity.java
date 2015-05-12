@@ -58,7 +58,8 @@ public class MenuActivity extends ActionBarActivity {
                     return;
                 }
 
-                String stringUrl = "http://10.0.2.2:8888/Quiz/rpc_quiz2.php";
+                String stringUrl = "";
+                String serverIdentidade = "http://10.0.2.2:8888/Quiz/rpc_quiz2.php";
                 // "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
                 ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -72,6 +73,12 @@ public class MenuActivity extends ActionBarActivity {
 
                           //  button.setClickable(false);
                           //  button.setEnabled(true);
+                            try {
+                                stringUrl = new getServer().execute(serverIdentidade).get();
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            Log.v("Async","Obtençao da url do servidor escolhido por eleicao");
                             ConexaoTask conexaoTask = new ConexaoTask();
                             conexaoTask.execute(stringUrl);
 
@@ -89,6 +96,84 @@ public class MenuActivity extends ActionBarActivity {
 
             }
         });
+    }
+
+    private class getServer extends AsyncTask<String,Void,String>{
+
+        @Override
+        protected  String doInBackground(String... urls){
+
+            InputStream input = null;
+
+            try {
+
+                //inicia o obj url e seta coisas na conexao http
+                URL url = new URL(urls[0]);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
+                conn.setInstanceFollowRedirects(true);
+
+                conn.setUseCaches(false);
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+
+
+
+
+
+                BasicNameValuePair par = new BasicNameValuePair("getServer","");
+
+
+
+                OutputStream os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(
+                        new OutputStreamWriter(os, "UTF-8"));
+                Log.e("Par.toString", par.toString());
+                writer.write(par.toString());
+
+                writer.flush();
+                writer.close();
+                os.close();
+
+                conn.connect();
+
+
+                int HttpResult = conn.getResponseCode();
+                StringBuilder sbuilder = new StringBuilder();
+
+
+
+                if(HttpResult == HttpURLConnection.HTTP_OK){
+
+                    input = conn.getInputStream();
+                    String line;
+                    BufferedReader buf = new BufferedReader(new InputStreamReader(input));
+
+                    while ((line = buf.readLine()) != null) {
+                        sbuilder.append(line);
+                    }
+                    Log.v("Resposta: ", "Teste: " + sbuilder.toString());
+                    //textView.setText(sbuilder.toString());
+
+                    input.close();
+                    return (sbuilder.toString());
+
+                }
+
+
+            }catch (IOException e){
+                Log.e("Conn: ","Erro na obtencao de servidor");
+                e.printStackTrace();
+            }
+
+            return null;
+
+        }
+
+
+
     }
 
 
