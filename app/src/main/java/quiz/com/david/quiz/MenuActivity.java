@@ -1,11 +1,11 @@
 package quiz.com.david.quiz;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,27 +14,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.message.BasicNameValuePair;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.Socket;
-import java.net.URL;
-
 
 public class MenuActivity extends ActionBarActivity {
 
-    private Button button;
+    private Button button, buttonCancel;
     private EditText player;
     private TextView area_resposta;
+    ConnectionService mConn;
+    boolean mBound = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,271 +33,112 @@ public class MenuActivity extends ActionBarActivity {
         button = (Button) findViewById(R.id.conecta);
         player = (EditText) findViewById(R.id.player);
         area_resposta = (TextView) findViewById(R.id.retorno);
+        buttonCancel = (Button) findViewById(R.id.btnCancela);
+        final Intent it = new Intent(this, ConnectionService.class);
 
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                button.setText("Atualizar");
                 String enviaPlayer = player.getText().toString();
 
                 if (enviaPlayer.equals("")) {
                     Toast.makeText(MenuActivity.this, "Insira algum nome", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                button.setEnabled(false);
+                buttonCancel.setEnabled(true);
+                it.putExtra("playerName", enviaPlayer);
+                startService(it);
+                bindService(it, mConnection, Context.BIND_AUTO_CREATE);
+                mBound = true;
 
-                String stringUrl = "";
-                String serverIdentidade = "http://10.0.2.2:8888/Quiz/rpc_quiz2.php";
-                // "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7";
-                ConnectivityManager connMgr = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+             /*   try{
+                    Thread.sleep(5000);
 
-                if (networkInfo != null && networkInfo.isConnected()) {
-
-
-                //String result;
-
-
-
-                          //  button.setClickable(false);
-                          //  button.setEnabled(true);
-                            try {
-                                stringUrl = new getServer().execute(serverIdentidade).get();
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                            Log.v("Async","Obtençao da url do servidor escolhido por eleicao");
-                            ConexaoTask conexaoTask = new ConexaoTask();
-                            conexaoTask.execute(stringUrl);
-
-
-
-
-
-
-
-
-
-                } else {
-                    Log.e("MenuActivty", "Conexão com sucesso");
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
 
+                connCheck();*/
+
+            }
+        });
+
+        buttonCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mBound) {
+                    unbindService(mConnection);
+                    stopService(it);
+                    mBound = false;
+                    button.setEnabled(true);
+                }
+            }
+        });
+
+        Button btnResult = (Button) findViewById(R.id.button5);
+        btnResult.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connCheck();
             }
         });
     }
 
-    private class getServer extends AsyncTask<String,Void,String>{
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-        @Override
-        protected  String doInBackground(String... urls){
-
-            InputStream input = null;
-
-            try {
-
-                //inicia o obj url e seta coisas na conexao http
-                URL url = new URL(urls[0]);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.setInstanceFollowRedirects(true);
-
-                conn.setUseCaches(false);
-                conn.setReadTimeout(10000 /* milliseconds */);
-                conn.setConnectTimeout(15000 /* milliseconds */);
-
-
-
-
-
-                BasicNameValuePair par = new BasicNameValuePair("getServer","");
-
-
-
-                OutputStream os = conn.getOutputStream();
-                BufferedWriter writer = new BufferedWriter(
-                        new OutputStreamWriter(os, "UTF-8"));
-                Log.e("Par.toString", par.toString());
-                writer.write(par.toString());
-
-                writer.flush();
-                writer.close();
-                os.close();
-
-                conn.connect();
-
-
-                int HttpResult = conn.getResponseCode();
-                StringBuilder sbuilder = new StringBuilder();
-
-
-
-                if(HttpResult == HttpURLConnection.HTTP_OK){
-
-                    input = conn.getInputStream();
-                    String line;
-                    BufferedReader buf = new BufferedReader(new InputStreamReader(input));
-
-                    while ((line = buf.readLine()) != null) {
-                        sbuilder.append(line);
-                    }
-                    Log.v("Resposta: ", "Teste: " + sbuilder.toString());
-                    //textView.setText(sbuilder.toString());
-
-                    input.close();
-                    return (sbuilder.toString());
-
-                }
-
-
-            }catch (IOException e){
-                Log.e("Conn: ","Erro na obtencao de servidor");
-                e.printStackTrace();
-            }
-
-            return null;
-
+        if (mBound) {
+            unbindService(mConnection);
         }
-
-
-
     }
 
+    public void connCheck() {
+        while (mBound) {
 
-    private class ConexaoTask extends AsyncTask<String,Void,String>{
+            String result = mConn.getResult();
 
-        String endereco,mensagem;
-        int porta;
-
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String resposta;
-            Socket socket = null;
-            DataOutputStream dataOutputStream = null;
-            DataInputStream dataInputStream = null;
-
-            Log.e("DoInBack","");
-            try {
-               /* socket = new Socket(endereco, porta);
-                dataInputStream = new DataInputStream(socket.getInputStream());
-                dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
-                dataOutputStream.writeUTF(mensagem);
-                resposta = dataInputStream.readUTF();
-                Log.e("RESPOSTA",resposta);
-                return resposta;  */
-
-                return iniciaConn(urls[0],player.getText().toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-
-                return "error";
-            }
-
-
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            //Log.v("Result-onPostExecute: ",result);
-
-            if(result.equals("error")){
+            if (result.equals("error")) {
                 area_resposta.setText("Problema na conexão");
 
-            } else if (result.equals("ready")){
+            } else if (result.equals("ready")) {
                 area_resposta.setText("Inicializando jogo...");
                 startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
+            } else
+                area_resposta.setText(result + " jogadores restantes para começar o jogo...");
+
+            try{
+                Thread.sleep(2000);
+
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
-            else
-                area_resposta.setText(result+" jogadores restantes para começar o jogo...");
-
         }
-
 
     }
 
 
-    private String iniciaConn(String myurl,String player_name) throws IOException {
+    private ServiceConnection mConnection = new ServiceConnection() {
 
-        InputStream input = null;
-
-        try {
-
-            //inicia o obj url e seta coisas na conexao http
-            URL url = new URL(myurl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-            conn.setInstanceFollowRedirects(true);
-
-            conn.setUseCaches(false);
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
-
-
-
-
-
-            BasicNameValuePair par = new BasicNameValuePair("rpc_message",player_name);
-
-
-
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            Log.e("Par.toString", par.toString());
-            writer.write(par.toString());
-
-            writer.flush();
-            writer.close();
-            os.close();
-
-            conn.connect();
-
-
-            int HttpResult = conn.getResponseCode();
-            StringBuilder sbuilder = new StringBuilder();
-
-
-
-            if(HttpResult == HttpURLConnection.HTTP_OK){
-
-                input = conn.getInputStream();
-                String line;
-                BufferedReader buf = new BufferedReader(new InputStreamReader(input));
-
-                while ((line = buf.readLine()) != null) {
-                    sbuilder.append(line);
-                }
-                Log.v("Resposta: ", "Teste: " + sbuilder.toString());
-                //textView.setText(sbuilder.toString());
-
-
-                return (sbuilder.toString());
-
-            }
-
-
-        }catch (IOException e){
-            Log.e("Conn: ","Erro na Transferencia");
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            Log.e("onServiceConnected", "OK");
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            ConnectionService.LocalBinder binder = (ConnectionService.LocalBinder) service;
+            mConn = binder.getService();
+            mBound = true;
         }
-        finally {
-            if(input != null){
-                input.close();
-            }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.e("onServiceDisconnected", "OK");
+            mBound = false;
         }
-        return null;
-
-
-    }
-
-
-
-
+    };
 
 
 }

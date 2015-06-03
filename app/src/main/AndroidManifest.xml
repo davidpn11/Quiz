@@ -27,6 +27,12 @@
             android:name=".QuestionsActivity"
             android:label="@string/title_activity_questions" >
         </activity>
+
+        <service
+            android:name=".ConnectionService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
 </manifest>
