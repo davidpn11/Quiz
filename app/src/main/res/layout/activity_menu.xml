@@ -71,6 +71,7 @@
         android:layout_height="wrap_content"
         android:text="Result"
         android:id="@+id/button5"
+        android:enabled="false"
         android:layout_alignBottom="@+id/btnCancela"
         android:layout_toRightOf="@+id/btnCancela"
         android:layout_toEndOf="@+id/btnCancela" />

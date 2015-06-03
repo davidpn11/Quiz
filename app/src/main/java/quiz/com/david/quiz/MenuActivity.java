@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -15,12 +17,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+
+
+
 public class MenuActivity extends ActionBarActivity {
 
     private Button button, buttonCancel;
     private EditText player;
     private TextView area_resposta;
     ConnectionService mConn;
+    protected static final int RESULT = 1;
     boolean mBound = false;
 
 
@@ -34,6 +40,7 @@ public class MenuActivity extends ActionBarActivity {
         player = (EditText) findViewById(R.id.player);
         area_resposta = (TextView) findViewById(R.id.retorno);
         buttonCancel = (Button) findViewById(R.id.btnCancela);
+        final Button btnResult = (Button) findViewById(R.id.button5);
         final Intent it = new Intent(this, ConnectionService.class);
 
 
@@ -48,19 +55,15 @@ public class MenuActivity extends ActionBarActivity {
                 }
                 button.setEnabled(false);
                 buttonCancel.setEnabled(true);
+                btnResult.setEnabled(true);
                 it.putExtra("playerName", enviaPlayer);
                 startService(it);
                 bindService(it, mConnection, Context.BIND_AUTO_CREATE);
                 mBound = true;
 
-             /*   try{
-                    Thread.sleep(5000);
 
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
 
-                connCheck();*/
+                connCheck();
 
             }
         });
@@ -73,11 +76,13 @@ public class MenuActivity extends ActionBarActivity {
                     stopService(it);
                     mBound = false;
                     button.setEnabled(true);
+                    buttonCancel.setEnabled(false);
+                    btnResult.setEnabled(false);
                 }
             }
         });
 
-        Button btnResult = (Button) findViewById(R.id.button5);
+
         btnResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,28 +100,57 @@ public class MenuActivity extends ActionBarActivity {
         }
     }
 
-    public void connCheck() {
-        while (mBound) {
-
-            String result = mConn.getResult();
-
-            if (result.equals("error")) {
-                area_resposta.setText("Problema na conexão");
-
-            } else if (result.equals("ready")) {
-                area_resposta.setText("Inicializando jogo...");
-                startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
-            } else
-                area_resposta.setText(result + " jogadores restantes para começar o jogo...");
-
-            try{
-                Thread.sleep(2000);
-
-            }catch (Exception e){
-                e.printStackTrace();
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Log.e("HANDLER", "called");
+            super.handleMessage(msg);
+            switch(msg.what){
+                case RESULT:
+                    String post = msg.getData().getString("resultado");
+                    area_resposta.setText(post);
+                    break;
+                default:
+                    break;
             }
-
         }
+    };
+
+    public void connCheck() {
+        Log.e("CONN_CHECK", "called");
+        new Thread() {
+            @Override
+            public void run() {
+
+                String result,resposta;
+
+                try {
+                    while (mBound) {
+
+                        Message mensagem = new Message();
+                        mensagem.what = RESULT;
+                        Bundle b = new Bundle();
+                        result = mConn.getResult();
+
+                        if (result.equals("error")) {
+                            resposta ="Problema na conexão";
+
+                        } else if (result.equals("ready")) {
+                            resposta = "Inicializando jogo...";
+                            startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
+                        } else
+                            resposta = result + " jogadores restantes para começar o jogo...";
+
+                        b.putString("resultado", resposta);
+                        mensagem.setData(b);
+                        handler.sendMessage(mensagem);
+                        Thread.sleep(2000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
 
     }
 

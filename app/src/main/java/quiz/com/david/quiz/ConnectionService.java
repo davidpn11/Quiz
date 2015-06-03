@@ -21,7 +21,7 @@ public class ConnectionService extends Service {
     public ConnectionService() {
     }
     String stringUrl = "";
-    String IDurl = "http://10.0.2.2:8888/Quiz/rpc_quizID.php";
+    String IDurl = "http://10.0.3.2:8888/Quiz/rpc_quizID.php";
     private final IBinder mBinder = new LocalBinder();
     String result;
 
@@ -89,7 +89,7 @@ public class ConnectionService extends Service {
                             conexao = false;
                             serverConnectionTask(stringUrl);
                         }
-                        Thread.sleep(5000);
+                        Thread.sleep(10000);
                     }
 
                 } catch (Exception e) {
@@ -221,7 +221,7 @@ public class ConnectionService extends Service {
                             }
 
                             Log.e("RESULTADO", result);
-                            Thread.sleep(2000);
+                            Thread.sleep(6000);
 
                             x++;
                             if (x == 20) {
