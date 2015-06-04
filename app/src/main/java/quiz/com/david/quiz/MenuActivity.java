@@ -63,7 +63,7 @@ public class MenuActivity extends ActionBarActivity {
 
 
 
-                connCheck();
+            //    connCheck();
 
             }
         });
@@ -86,6 +86,7 @@ public class MenuActivity extends ActionBarActivity {
         btnResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnResult.setEnabled(false);
                 connCheck();
             }
         });
