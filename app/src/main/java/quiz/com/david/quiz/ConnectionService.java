@@ -89,6 +89,7 @@ public class ConnectionService extends Service {
                             identidadeError = false;
                             stringUrl = getServerError(IDurl,stringUrl);
                             Log.v("DESTROY", stringUrl);
+                            Thread.sleep(5000);
                             conexao = true;
                         }
 
@@ -138,21 +139,6 @@ public class ConnectionService extends Service {
             conn.setDoInput(true);
             conn.setInstanceFollowRedirects(true);
 
-          /*  conn.setUseCaches(false);
-            conn.setReadTimeout(10000 );
-            conn.setConnectTimeout(10000);
-
-            BasicNameValuePair par = new BasicNameValuePair("getServer", "");
-
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(
-                    new OutputStreamWriter(os, "UTF-8"));
-            writer.write(par.toString());
-
-            writer.flush();
-            writer.close();
-
-            os.close();*/
 
             conn.connect();
 
