@@ -68,7 +68,7 @@ public class ConnectionService extends Service {
             "},\n" +
             "{\n" +
             "\n" +
-            "\t\"pergunta\":\"You can't think of Cuba without thinking of Fidel Castro, leader of the country for almost fifty years. Which of these awards did Castro receive three times?\",\n" +
+            "\t\"pergunta\":\"Which of these awards did Fidel Castro receive three times?\",\n" +
             "\t\"op1\":\"Order of Lenin\",\n" +
             "\t\"op2\":\"Nobel Peace Prize\",\n" +
             "\t\"op3\":\"Best Actor Oscar\",\n" +

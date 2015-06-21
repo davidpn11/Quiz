@@ -372,57 +372,6 @@ public class QuestionsActivity extends ActionBarActivity {
 
     }
 
-    public JSONArray geraArray() {
-        JSONArray array = new JSONArray();
-
-        JSONObject obj1 = new JSONObject();
-        JSONObject obj2 = new JSONObject();
-        JSONObject obj3 = new JSONObject();
-        JSONObject obj4 = new JSONObject();
-
-
-        try {
-            obj1.put("pergunta", "Pergunta FEITA1");
-            obj1.put("op1", "OPCAO 1");
-            obj1.put("op2", "OPCAO 2");
-            obj1.put("op3", "OPCAO 3");
-            obj1.put("op4", "OPCAO 4");
-            obj1.put("resposta", 2);
-
-            obj2.put("pergunta", "Pergunta FEITA2");
-            obj2.put("op1", "OPCAO 1");
-            obj2.put("op2", "OPCAO 2");
-            obj2.put("op3", "OPCAO 3");
-            obj2.put("op4", "OPCAO 4");
-            obj2.put("resposta", 2);
-
-            obj3.put("pergunta", "Pergunta FEITA3");
-            obj3.put("op1", "OPCAO 1");
-            obj3.put("op2", "OPCAO 2");
-            obj3.put("op3", "OPCAO 3");
-            obj3.put("op4", "OPCAO 4");
-            obj3.put("resposta", 2);
-
-            obj4.put("pergunta", "Pergunta FEITA4");
-            obj4.put("op1", "OPCAO 1");
-            obj4.put("op2", "OPCAO 2");
-            obj4.put("op3", "OPCAO 3");
-            obj4.put("op4", "OPCAO 4");
-            obj4.put("resposta", 2);
-
-            array.put(obj1);
-            array.put(obj2);
-            array.put(obj3);
-            array.put(obj4);
-
-            return array;
-
-        } catch (JSONException e) {
-            return null;
-        }
-
-
-    }
 
     private ServiceConnection mConnection = new ServiceConnection() {
 

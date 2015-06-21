@@ -64,7 +64,7 @@ public class MenuActivity extends ActionBarActivity {
                 mBound = true;
                 boolHandler = true;
 
-                //connCheck();
+                connCheck();
 
             }
         });
