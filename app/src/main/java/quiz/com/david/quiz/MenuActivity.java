@@ -28,6 +28,8 @@ public class MenuActivity extends ActionBarActivity {
     ConnectionService mConn;
     protected static final int RESULT = 1;
     boolean mBound = false;
+    boolean boolHandler = false;
+    String perguntas_string;
 
 
     @Override
@@ -60,10 +62,9 @@ public class MenuActivity extends ActionBarActivity {
                 startService(it);
                 bindService(it, mConnection, Context.BIND_AUTO_CREATE);
                 mBound = true;
+                boolHandler = true;
 
-
-
-            //    connCheck();
+                //connCheck();
 
             }
         });
@@ -75,6 +76,7 @@ public class MenuActivity extends ActionBarActivity {
                     unbindService(mConnection);
                     stopService(it);
                     mBound = false;
+                    boolHandler = false;
                     button.setEnabled(true);
                     buttonCancel.setEnabled(false);
                     btnResult.setEnabled(false);
@@ -126,26 +128,36 @@ public class MenuActivity extends ActionBarActivity {
                 String result,resposta;
 
                 try {
-                    while (mBound) {
+                    while (boolHandler) {
 
                         Message mensagem = new Message();
                         mensagem.what = RESULT;
                         Bundle b = new Bundle();
                         result = mConn.getResult();
+                        perguntas_string = mConn.getPerguntas();
 
-                        if (result.equals("error")) {
-                            resposta ="Problema na conexão";
+                        if(result!="") {
+                            if (result.equals("error")) {
+                                resposta = "Problema na conexão";
 
-                        } else if (result.equals("ready")) {
-                            resposta = "Inicializando jogo...";
-                            startActivity(new Intent(MenuActivity.this, QuestionsActivity.class));
-                        } else
-                            resposta = result + " jogadores restantes para começar o jogo...";
+                            } else if (result.equals("ready")) {
+                                resposta = "Inicializando jogo...";
+                                boolHandler = false;
+                                Thread.sleep(2000);
+                                Intent it = new Intent(MenuActivity.this, QuestionsActivity.class);
+                                it.putExtra("perguntas_string", perguntas_string);
+                                startActivity(it);
+                            } else if(result.equals("wait")){
+                                resposta = "Aguarde";
 
-                        b.putString("resultado", resposta);
-                        mensagem.setData(b);
-                        handler.sendMessage(mensagem);
-                        Thread.sleep(2000);
+                            } else
+                                resposta = result + " jogadores restantes para começar o jogo...";
+
+                            b.putString("resultado", resposta);
+                            mensagem.setData(b);
+                            handler.sendMessage(mensagem);
+                            Thread.sleep(2000);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

@@ -2,8 +2,7 @@ package quiz.com.david.quiz;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,9 +29,9 @@ public class QuizActivity extends ActionBarActivity {
         try {
             JSONObject obj = new JSONObject(getIntent().getStringExtra("objeto"));
 
-            final int ans = obj.getInt("resposta");
+            Log.e("Pergunta_OBJ", obj.toString());
 
-
+            final String ans = obj.getString("answer");
             pergunta.setText(obj.getString("pergunta"));
             button.setText(obj.getString("op1"));
             button2.setText(obj.getString("op2"));
@@ -44,9 +43,9 @@ public class QuizActivity extends ActionBarActivity {
             button.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
 
-                    int respondida = 1;
+                    String respondida = "1";
 
-                    if (respondida == ans) {
+                    if (respondida.equals(ans)) {
                         setResult(1);
                     }
                     else
@@ -71,9 +70,9 @@ public class QuizActivity extends ActionBarActivity {
             button2.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
 
-                    int respondida = 2;
+                    String respondida = "2";
 
-                    if (respondida == ans) {
+                    if (respondida.equals(ans)) {
                         setResult(1);
                     }
                     else
@@ -87,9 +86,9 @@ public class QuizActivity extends ActionBarActivity {
             button3.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
 
-                    int respondida = 3;
+                    String respondida = "3";
 
-                    if (respondida == ans) {
+                    if (respondida.equals(ans)) {
                         setResult(1);
                     }
                     else
@@ -111,9 +110,10 @@ public class QuizActivity extends ActionBarActivity {
 
             button4.setOnClickListener(new Button.OnClickListener() {
                 public void onClick(View v) {
-                    int respondida = 4;
 
-                    if (respondida == ans) {
+                    String respondida = "4";
+
+                    if (respondida.equals(ans)) {
                         setResult(1);
                     }
                     else
@@ -124,43 +124,8 @@ public class QuizActivity extends ActionBarActivity {
                 }
             });
 
-
-
         } catch (JSONException e){
 
         }
-
-
-
-
-
     }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-
 }

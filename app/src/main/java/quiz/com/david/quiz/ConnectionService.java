@@ -7,6 +7,9 @@ import android.os.IBinder;
 import android.util.Log;
 
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,14 +24,91 @@ public class ConnectionService extends Service {
     public ConnectionService() {
     }
     String stringUrl = "";
-    String IDurl = "http://10.0.3.2:8888/Quiz/Identidade/sendCoordinator.php";
+    String IDurl = "http://10.0.3.2:8888/Quiz/rpc_quizID.php";
     private final IBinder mBinder = new LocalBinder();
-    String result;
+    String result = "wait";
+    String parametro;
+    int MUTEX = 1;
+    JSONArray perguntas;
+    String teste = "{ \n" +
+            "\t\"Perguntas\":[\n" +
+            "{\n" +
+            "\n" +
+            "\t\"pergunta\":\"What do Cubans call their island due to its form?\",\n" +
+            "\t\"op1\":\"La Cinta (The Ribbon)\",\n" +
+            "\t\"op2\":\"El Cocodrilo (The Crocodile)\",\n" +
+            "\t\"op3\":\"El Cinturon (The Belt)\",\n" +
+            "\t\"op4\":\"El Abrelatas (The Can Opener)\",\n" +
+            "\t\"answer\":\"2\"\n" +
+            "},\n" +
+            "{\n" +
+            "\t\"pergunta\":\"What's the word for 'Friend', 'Buddy' in Cuban Spanish?\",\n" +
+            "\t\"op1\":\"Asere\",\n" +
+            "\t\"op2\":\"Amigo\",\n" +
+            "\t\"op3\":\"Che\",\n" +
+            "\t\"op4\":\"Companero\",\n" +
+            "\t\"answer\":\"3\"\n" +
+            "},\n" +
+            "{\n" +
+            "\t\"pergunta\":\"What is Cuba's capital called there?\",\n" +
+            "\t\"op1\":\"Santiago\",\n" +
+            "\t\"op2\":\"Havana\",\n" +
+            "\t\"op3\":\"Havanna\",\n" +
+            "\t\"op4\":\"La Habana\",\n" +
+            "\t\"answer\":\"4\"\n" +
+            "},\n" +
+            "{\n" +
+            "\n" +
+            "\t\"pergunta\":\"What are the typical, truck-pulled buses in Havana called?\",\n" +
+            "\t\"op1\":\"Camello (Camel)\",\n" +
+            "\t\"op2\":\"Elefante (Elephant)\",\n" +
+            "\t\"op3\":\"Tocororo (Trogon)\",\n" +
+            "\t\"op4\":\"Cocodrilo (Crocodile)\",\n" +
+            "\t\"answer\":\"1\"\n" +
+            "},\n" +
+            "{\n" +
+            "\n" +
+            "\t\"pergunta\":\"You can't think of Cuba without thinking of Fidel Castro, leader of the country for almost fifty years. Which of these awards did Castro receive three times?\",\n" +
+            "\t\"op1\":\"Order of Lenin\",\n" +
+            "\t\"op2\":\"Nobel Peace Prize\",\n" +
+            "\t\"op3\":\"Best Actor Oscar\",\n" +
+            "\t\"op4\":\"Fields Medal\",\n" +
+            "\t\"answer\":\"1\"\n" +
+            "},\n" +
+            "{\n" +
+            "\n" +
+            "\t\"pergunta\":\"What is a 'jinetero'?\",\n" +
+            "\t\"op1\":\"Dominoes player\",\n" +
+            "\t\"op2\":\"Tout\",\n" +
+            "\t\"op3\":\"Male prostitute \",\n" +
+            "\t\"op4\":\"Taxi driver\",\n" +
+            "\t\"answer\":\"2\"\n" +
+            "},\n" +
+            "{\n" +
+            "\n" +
+            "\t\"pergunta\":\"What is the hot, modern Cuban flavor of Salsa?\",\n" +
+            "\t\"op1\":\"Son\",\n" +
+            "\t\"op2\":\"Timba\",\n" +
+            "\t\"op3\":\"Bolero\",\n" +
+            "\t\"op4\":\"Merengue\",\n" +
+            "\t\"answer\":\"2\"\n" +
+            "},\n" +
+            "{\n" +
+            "\t\"pergunta\":\"What is the most popular brand of rum in Cuba?\",\n" +
+            "\t\"op1\":\"Paticruzado\",\n" +
+            "\t\"op2\":\"Bacardi\",\n" +
+            "\t\"op3\":\"Cristal\",\n" +
+            "\t\"op4\":\"Havana Club\",\n" +
+            "\t\"answer\":\"4\"\n" +
+            "}\n" +
+            "]\n" +
+            "}}";
 
     boolean onGame = true;
     boolean identidade = true;
     boolean identidadeError = false;
     boolean conexao = false;
+
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -63,31 +143,47 @@ public class ConnectionService extends Service {
     }
 
     public String getResult() {
-        return result;
+        while(MUTEX!=1){}
 
+        return result;
+    }
+
+    public String getPerguntas(){
+        return teste;
+    }
+
+
+    public void setParametro(String param){
+        parametro = param;
     }
 
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(final Intent intent, int flags, int startId) {
 
         new Thread() {
             @Override
             public void run() {
                 try {
-                    while (onGame) {
+                    String playerName = intent.getStringExtra("playerName");
+                    parametro = "player."+playerName;
+                    Log.e("para",parametro);
+                  //  perguntas = createPerguntasArray();
 
+                    while (onGame) {
+                      //  Log.e("TESTE", teste)
                         if (identidade) {
                             Log.v("SERVICE", "chama IDENTIDADE");
                             identidade = false;
                             stringUrl = getServer(IDurl);
-                            stringUrl = changeURL(stringUrl);
+                            //stringUrl = changeURL(stringUrl);
                             conexao = true;
                         }
                         if (identidadeError) {
                             Log.v("SERVICE", "chama IDENTIDADE");
                             identidadeError = false;
                             stringUrl = getServerError(IDurl,stringUrl);
+
                             Log.v("DESTROY", stringUrl);
                             Thread.sleep(5000);
                             conexao = true;
@@ -96,7 +192,7 @@ public class ConnectionService extends Service {
                         if (conexao) {
                             Log.v("SERVICE", "chama CONEXAO");
                             conexao = false;
-                            serverConnectionTask(stringUrl);
+                            serverConnectionTask(stringUrl,playerName);
                         }
                         Thread.sleep(10000);
                     }
@@ -146,7 +242,6 @@ public class ConnectionService extends Service {
             int HttpResult = conn.getResponseCode();
             StringBuilder sbuilder = new StringBuilder();
 
-            int x = 0;
 
             if (HttpResult == HttpURLConnection.HTTP_OK) {
 
@@ -157,7 +252,6 @@ public class ConnectionService extends Service {
                 while ((line = buf.readLine()) != null) {
                     sbuilder.append(line);
                 }
-                Log.e("TESTE", "Inicia Thread:"+sbuilder.toString());
                 serverAddr = sbuilder.toString();
                 Log.e("RESULTADO", "Result: "+ serverAddr);
             }
@@ -175,7 +269,7 @@ public class ConnectionService extends Service {
     }
 
     public String getServerError(final String stringUrl,final String errorURL) {
-        Log.v("CONEXAO", "Inicia Thread");
+        Log.e("getServerError", "Chamou erro");
         String serverAddr = "";
         InputStream input = null;
         try {
@@ -209,7 +303,6 @@ public class ConnectionService extends Service {
             int HttpResult = conn.getResponseCode();
             StringBuilder sbuilder = new StringBuilder();
 
-            int x = 0;
 
             if (HttpResult == HttpURLConnection.HTTP_OK) {
 
@@ -220,7 +313,6 @@ public class ConnectionService extends Service {
                 while ((line = buf.readLine()) != null) {
                     sbuilder.append(line);
                 }
-                Log.e("TESTE", "Inicia Thread:"+sbuilder.toString());
                 serverAddr = sbuilder.toString();
                 Log.e("RESULTADO", "Result: "+ serverAddr);
             }
@@ -238,16 +330,30 @@ public class ConnectionService extends Service {
     }
 
 
-    public void serverConnectionTask(final String stringUrl) {
-        Log.v("CONEXAO", "Inicia Thread");
+    public String actionParam(){
+        int dot = parametro.indexOf(".");
+        String sub = parametro.substring(0,dot);
+        return sub;
+
+    }
+
+    public void serverConnectionTask(final String stringUrl,final String player) {
+
         new Thread() {
             @Override
             public void run() {
 
                 InputStream input = null;
+                String action;
                 try {
+
+
+
+                    boolean first = true;
                     while (onGame) {
-                        //inicia o obj url e seta coisas na conexao http
+                        MUTEX = 0;
+
+
                         URL url = new URL(stringUrl);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("POST");
@@ -258,8 +364,19 @@ public class ConnectionService extends Service {
                         conn.setReadTimeout(10000 /* milliseconds */);
                         conn.setConnectTimeout(10000 /* milliseconds */);
 
-                        BasicNameValuePair par = new BasicNameValuePair("getServer", "");
+                        BasicNameValuePair par = new BasicNameValuePair("","");
+                        action = actionParam();
 
+
+                        if(action.equals("player")){
+                            par = new BasicNameValuePair("playerName",parametro);
+
+                        }else if(action.equals("getmutex")){
+                            par = new BasicNameValuePair("getMutex",parametro);
+                        }
+
+
+                        Log.e("PARAMETRO",par.toString());
                         OutputStream os = conn.getOutputStream();
                         BufferedWriter writer = new BufferedWriter(
                                 new OutputStreamWriter(os, "UTF-8"));
@@ -276,7 +393,6 @@ public class ConnectionService extends Service {
                         int HttpResult = conn.getResponseCode();
                         StringBuilder sbuilder = new StringBuilder();
 
-                        int x = 0;
 
                         if (HttpResult == HttpURLConnection.HTTP_OK) {
 
@@ -287,31 +403,54 @@ public class ConnectionService extends Service {
                                 sbuilder.append(line);
                             }
 
-                            result = sbuilder.toString();
-                            if(result ==""){
-                                Log.e("RESULTADO VAZIO", "");
-                                throw new Exception("Resultado vazio");
+                            if(first){
+
+                             sbuilder.toString();
+                             first = false;
+                                //PEGAR VETOR DE PERGUNTAS AQUIIIIIIIII
+                             Thread.sleep(6000);
+                            }else {
+
+                                result = sbuilder.toString();
+                                if (result == "") {
+                                    Log.e("RESULTADO VAZIO", "");
+                                    throw new Exception("Resultado vazio");
+                                }
+
+                                Log.e("RESULTADO", result);
+                                Thread.sleep(5000);
                             }
 
-                            Log.e("RESULTADO", result);
-                            Thread.sleep(6000);
-
-                            x++;
-                            if (x == 20) {
-                                break;
-                            }
                         }
+                        MUTEX = 1;
                     }
                     input.close();
                     stopSelf();
 
                 } catch (Exception e) {
+                    parametro = "";
                     Log.e("Conn: ", "Erro na obtencao de servidor");
                     e.printStackTrace();
                     identidadeError = true;
                 }
             }
         }.start();
+
+    }
+
+    public JSONArray createPerguntasArray(String s){
+        try {
+            JSONObject jsnobject = new JSONObject(s);
+            JSONArray jsonArray = jsnobject.getJSONArray("Perguntas");
+
+            JSONObject x = jsonArray.getJSONObject(0);
+            Log.e("JSON: ", x.toString());
+
+            return jsonArray;
+        }catch (JSONException e){
+            e.printStackTrace();
+            return null;
+        }
 
     }
 
