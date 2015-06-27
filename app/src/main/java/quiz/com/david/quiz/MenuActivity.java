@@ -64,7 +64,7 @@ public class MenuActivity extends ActionBarActivity {
                 mBound = true;
                 boolHandler = true;
 
-                connCheck();
+              //  connCheck();
 
             }
         });
@@ -128,12 +128,14 @@ public class MenuActivity extends ActionBarActivity {
                 String result,resposta;
 
                 try {
+
                     while (boolHandler) {
 
                         Message mensagem = new Message();
                         mensagem.what = RESULT;
                         Bundle b = new Bundle();
                         result = mConn.getResult();
+
                         perguntas_string = mConn.getPerguntas();
 
                         if(result!="") {
@@ -142,6 +144,9 @@ public class MenuActivity extends ActionBarActivity {
 
                             } else if (result.equals("ready")) {
                                 resposta = "Inicializando jogo...";
+                                Log.e("STATUS DO JOGO", resposta);
+                                if(perguntas_string!=null)
+                                Log.e("PERGUNTAS STRING", perguntas_string);
                                 boolHandler = false;
                                 Thread.sleep(2000);
                                 Intent it = new Intent(MenuActivity.this, QuestionsActivity.class);

@@ -26,7 +26,7 @@ public class QuestionsActivity extends ActionBarActivity {
     ConnectionService mConn;
     protected static final int RESULT = 1;
     boolean mBound = false;
-
+    String selecionada = "";
 
 
     @Override
@@ -97,21 +97,35 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(0);
                     String livre;
-                    Log.e("Pergunta1",array.get(0).toString());
-                    mConn.setParametro("getmutex.0");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta1", array.get(0).toString());
+                    mConn.setParametro("getmutex.0.");
+                    mConn.setOpcao(0);
 
+                    do{
+                        livre = mConn.getOpcao(0);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "0";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -131,21 +145,36 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(1);
                     String livre;
-                    Log.e("Pergunta2",array.get(1).toString());
-                    mConn.setParametro("getmutex.1");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta2", array.get(1).toString());
 
+                    mConn.setParametro("getmutex.1.");
+                    mConn.setOpcao(1);
+
+                    do{
+                        livre = mConn.getOpcao(1);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "1";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -164,21 +193,36 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(2);
                     String livre;
-                    Log.e("Pergunta3",array.get(2).toString());
-                    mConn.setParametro("getmutex.2");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta3", array.get(2).toString());
 
+                    mConn.setParametro("getmutex.2.");
+                    mConn.setOpcao(2);
+
+                    do{
+                        livre = mConn.getOpcao(2);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "2";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -197,21 +241,36 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(3);
                     String livre;
-                    Log.e("Pergunta4",array.get(3).toString());
-                    mConn.setParametro("getmutex.3");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta4", array.get(3).toString());
 
+                    mConn.setParametro("getmutex.3.");
+                    mConn.setOpcao(3);
+
+                    do{
+                        livre = mConn.getOpcao(3);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "3";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -230,21 +289,36 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(4);
                     String livre;
-                    Log.e("Pergunta5",array.get(4).toString());
-                    mConn.setParametro("getmutex.4");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta5", array.get(4).toString());
 
+                    mConn.setParametro("getmutex.4.");
+                    mConn.setOpcao(4);
+
+                    do{
+                        livre = mConn.getOpcao(4);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "4";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -262,21 +336,35 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(5);
                     String livre;
-                    Log.e("Pergunta6",array.get(5).toString());
-                    mConn.setParametro("getmutex.5");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta6", array.get(5).toString());
+                    mConn.setParametro("getmutex.5.");
+                    mConn.setOpcao(5);
 
+                    do{
+                        livre = mConn.getOpcao(5);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "5";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -295,21 +383,36 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(6);
                     String livre;
-                    Log.e("Pergunta7",array.get(6).toString());
-                    mConn.setParametro("getmutex.6");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta7", array.get(6).toString());
 
+                    mConn.setParametro("getmutex.6.");
+                    mConn.setOpcao(6);
+
+                    do{
+                        livre = mConn.getOpcao(6);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "6";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -328,21 +431,36 @@ public class QuestionsActivity extends ActionBarActivity {
                 try {
                     JSONObject json = array.getJSONObject(7);
                     String livre;
-                    Log.e("Pergunta8",array.get(7).toString());
-                    mConn.setParametro("getmutex.7");
-                    livre = mConn.getResult();
-                    Log.v("",livre);
-                    if(livre.equals("1")) {
+                    Log.e("Pergunta8", array.get(7).toString());
 
+                    mConn.setParametro("getmutex.7.");
+                    mConn.setOpcao(7);
+
+                    do{
+                        livre = mConn.getOpcao(7);
+
+                    }while(livre.equals(""));
+
+
+                    Log.v("",livre);
+
+                    if(livre.equals("free")) {
+                        selecionada = "7";
                         Intent pergunta = new Intent(QuestionsActivity.this, QuizActivity.class);
                         pergunta.putExtra("objeto", json.toString());
 
                         startActivityForResult(pergunta, RESPOSTA);
                         Log.v("RESPOSTA", "" + RESPOSTA);
-                    } else if(livre.equals("0")) {
+                    } else if(livre.equals("block")) {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
-                    }else{
+                    } else if(livre.equals("close")){
+                        Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
+                        btntemp.setBackgroundResource(R.drawable.round_errado);
+                        btntemp.setImageResource(R.drawable.errada);
+                        btntemp.setClickable(false);
+
+                    } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
                     }
 
@@ -397,10 +515,13 @@ public class QuestionsActivity extends ActionBarActivity {
                                     Intent data) {
         if (requestCode == RESPOSTA) {
             if (resultCode == 1) {
+
+                mConn.setParametro("setmutex."+selecionada+".2");
                 btntemp.setBackgroundResource(R.drawable.round_certo);
                 btntemp.setImageResource(R.drawable.correta);
                 btntemp.setClickable(false);
             } else if (resultCode == 0) {
+                mConn.setParametro("setmutex."+selecionada+".1");
                 btntemp.setBackgroundResource(R.drawable.round_errado);
                 btntemp.setImageResource(R.drawable.errada);
                 btntemp.setClickable(false);

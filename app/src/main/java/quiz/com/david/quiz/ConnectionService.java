@@ -24,13 +24,18 @@ public class ConnectionService extends Service {
     public ConnectionService() {
     }
     String stringUrl = "";
-    String IDurl = "http://10.0.3.2:8888/Quiz/rpc_quizID.php";
+    String IDurl = "http://192.168.0.10:8888/Final/S1/serverID.php";
     private final IBinder mBinder = new LocalBinder();
     String result = "wait";
+    String retorno;
     String parametro;
     int MUTEX = 1;
     JSONArray perguntas;
-    String teste = "{ \n" +
+    String perguntas_str;
+    String[] opcoes = new String[8];
+
+
+    /*String perguntas_str = "{ \n" +
             "\t\"Perguntas\":[\n" +
             "{\n" +
             "\n" +
@@ -103,11 +108,12 @@ public class ConnectionService extends Service {
             "}\n" +
             "]\n" +
             "}}";
-
+*/
     boolean onGame = true;
     boolean identidade = true;
     boolean identidadeError = false;
     boolean conexao = false;
+    boolean Playing = false;
 
 
     @Override
@@ -149,9 +155,18 @@ public class ConnectionService extends Service {
     }
 
     public String getPerguntas(){
-        return teste;
+        return perguntas_str;
     }
 
+
+    public void setOpcao(int x){
+        opcoes[x] = "";
+    }
+
+    public String getOpcao(int x){
+        while(MUTEX!=1){}
+            return opcoes[x];
+    }
 
     public void setParametro(String param){
         parametro = param;
@@ -165,10 +180,14 @@ public class ConnectionService extends Service {
             @Override
             public void run() {
                 try {
+                    for(int i = 0;i<opcoes.length;i++){
+                        opcoes[i] = "";
+                    }
+
                     String playerName = intent.getStringExtra("playerName");
-                    parametro = "player."+playerName;
+                    parametro = "player."+playerName+".";
                     Log.e("para",parametro);
-                  //  perguntas = createPerguntasArray();
+                   // perguntas = createPerguntasArray(perguntas_str);
 
                     while (onGame) {
                       //  Log.e("TESTE", teste)
@@ -192,7 +211,7 @@ public class ConnectionService extends Service {
                         if (conexao) {
                             Log.v("SERVICE", "chama CONEXAO");
                             conexao = false;
-                            serverConnectionTask(stringUrl,playerName);
+                            serverConnectionTask(stringUrl);
                         }
                         Thread.sleep(10000);
                     }
@@ -209,18 +228,6 @@ public class ConnectionService extends Service {
     }
 
 
-    public String changeURL(String url){
-
-        String http = url.substring(0,7);
-        //Log.v("http", http);
-        String ipPort = "10.0.3.2:8888";
-        String server = url.substring(21,url.length());
-        //Log.v("server", server);
-        String result = http+ipPort+server;
-
-            return result;
-    }
-
 
     public String getServer(final String stringUrl) {
         Log.v("CONEXAO", "Inicia Thread");
@@ -230,6 +237,7 @@ public class ConnectionService extends Service {
 
             //inicia o obj url e seta coisas na conexao http
             URL url = new URL(stringUrl);
+            Log.e("CONEXAO", stringUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
@@ -242,7 +250,6 @@ public class ConnectionService extends Service {
             int HttpResult = conn.getResponseCode();
             StringBuilder sbuilder = new StringBuilder();
 
-
             if (HttpResult == HttpURLConnection.HTTP_OK) {
 
                 input = conn.getInputStream();
@@ -253,8 +260,10 @@ public class ConnectionService extends Service {
                     sbuilder.append(line);
                 }
                 serverAddr = sbuilder.toString();
-                Log.e("RESULTADO", "Result: "+ serverAddr);
+                Log.e("RESULTADO_ID", "SERVIDOR: "+ serverAddr);
+
             }
+
             //input.close();
             return serverAddr;
 
@@ -337,7 +346,7 @@ public class ConnectionService extends Service {
 
     }
 
-    public void serverConnectionTask(final String stringUrl,final String player) {
+    public void serverConnectionTask(final String stringUrl) {
 
         new Thread() {
             @Override
@@ -364,16 +373,15 @@ public class ConnectionService extends Service {
                         conn.setReadTimeout(10000 /* milliseconds */);
                         conn.setConnectTimeout(10000 /* milliseconds */);
 
-                        BasicNameValuePair par = new BasicNameValuePair("","");
                         action = actionParam();
+                        //BasicNameValuePair par = new BasicNameValuePair("","");
 
+                        /*if(action.equals("player")){
+                            par = new BasicNameValuePair("rpc_message",parametro);
 
-                        if(action.equals("player")){
-                            par = new BasicNameValuePair("playerName",parametro);
-
-                        }else if(action.equals("getmutex")){
-                            par = new BasicNameValuePair("getMutex",parametro);
-                        }
+                        }else if(action.equals("getmutex")){*/
+                           BasicNameValuePair par = new BasicNameValuePair("rpc_message",parametro);
+                        //}
 
 
                         Log.e("PARAMETRO",par.toString());
@@ -403,26 +411,50 @@ public class ConnectionService extends Service {
                                 sbuilder.append(line);
                             }
 
-                            if(first){
 
-                             sbuilder.toString();
-                             first = false;
-                                //PEGAR VETOR DE PERGUNTAS AQUIIIIIIIII
-                             Thread.sleep(6000);
-                            }else {
 
+
+
+                            Log.e("PLAYING",""+Playing);
+
+                            if(!Playing) {
                                 result = sbuilder.toString();
-                                if (result == "") {
-                                    Log.e("RESULTADO VAZIO", "");
-                                    throw new Exception("Resultado vazio");
+
+                                if (first) {
+                                    if (result.length() > 1) {
+                                        perguntas_str = result;
+                                       // result = "Aguarde...";
+                                    }
+                                    Log.e("PERGUNTAS", perguntas_str);
+                                    first = false;
+                                    Thread.sleep(1000);
+                                } else {
+
+                                    if (result == "") {
+                                        Log.e("RESULTADO VAZIO", "");
+                                        throw new Exception("Resultado vazio");
+                                    } else if (result.equals("ready")) {
+                                        Playing = true;
+                                    }
+
+                                    Log.e("RESULTADO", result);
+                                }
+                            }else{
+                                if(action.equals("getmutex")){
+                                    result = sbuilder.toString();
+                                    int posicao = Character.getNumericValue(parametro.charAt(parametro.length()-2));
+                                    opcoes[posicao] = result;
+                                    Log.e("OPCAO", opcoes[posicao]);
                                 }
 
-                                Log.e("RESULTADO", result);
-                                Thread.sleep(5000);
+
+
                             }
+                            MUTEX = 1;
+                            Thread.sleep(3000);
 
                         }
-                        MUTEX = 1;
+
                     }
                     input.close();
                     stopSelf();
