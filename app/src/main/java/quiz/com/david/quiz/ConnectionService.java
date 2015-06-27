@@ -32,6 +32,7 @@ public class ConnectionService extends Service {
     int MUTEX = 1;
     JSONArray perguntas;
     String perguntas_str;
+    int TIME = 1000;
     String[] opcoes = new String[8];
 
 
@@ -434,6 +435,7 @@ public class ConnectionService extends Service {
                                         Log.e("RESULTADO VAZIO", "");
                                         throw new Exception("Resultado vazio");
                                     } else if (result.equals("ready")) {
+                                        TIME = 500;
                                         Playing = true;
                                     }
 
@@ -451,7 +453,7 @@ public class ConnectionService extends Service {
 
                             }
                             MUTEX = 1;
-                            Thread.sleep(3000);
+                            Thread.sleep(TIME);
 
                         }
 
