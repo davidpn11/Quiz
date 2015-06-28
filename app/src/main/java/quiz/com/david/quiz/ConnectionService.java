@@ -8,8 +8,6 @@ import android.util.Log;
 
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -150,6 +148,7 @@ public class ConnectionService extends Service {
     }
 
     public String getResult() {
+        Log.e("GetResult",result);
         while(MUTEX!=1){}
 
         return result;
@@ -170,6 +169,7 @@ public class ConnectionService extends Service {
     }
 
     public void setParametro(String param){
+        if(MUTEX!=1){}
         parametro = param;
     }
 
@@ -214,7 +214,7 @@ public class ConnectionService extends Service {
                             conexao = false;
                             serverConnectionTask(stringUrl);
                         }
-                        Thread.sleep(10000);
+                        Thread.sleep(3000);
                     }
 
                 } catch (Exception e) {
@@ -362,7 +362,7 @@ public class ConnectionService extends Service {
                     boolean first = true;
                     while (onGame) {
                         MUTEX = 0;
-
+                        action = actionParam();
 
                         URL url = new URL(stringUrl);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -374,7 +374,7 @@ public class ConnectionService extends Service {
                         conn.setReadTimeout(10000 /* milliseconds */);
                         conn.setConnectTimeout(10000 /* milliseconds */);
 
-                        action = actionParam();
+
                         //BasicNameValuePair par = new BasicNameValuePair("","");
 
                         /*if(action.equals("player")){
@@ -416,7 +416,7 @@ public class ConnectionService extends Service {
 
 
 
-                            Log.e("PLAYING",""+Playing);
+                            //Log.e("PLAYING",""+Playing);
 
                             if(!Playing) {
                                 result = sbuilder.toString();
@@ -424,7 +424,7 @@ public class ConnectionService extends Service {
                                 if (first) {
                                     if (result.length() > 1) {
                                         perguntas_str = result;
-                                       // result = "Aguarde...";
+                                        result = "1";
                                     }
                                     Log.e("PERGUNTAS", perguntas_str);
                                     first = false;
@@ -435,18 +435,29 @@ public class ConnectionService extends Service {
                                         Log.e("RESULTADO VAZIO", "");
                                         throw new Exception("Resultado vazio");
                                     } else if (result.equals("ready")) {
-                                        TIME = 500;
+                                        TIME = 100;
                                         Playing = true;
                                     }
 
                                     Log.e("RESULTADO", result);
                                 }
                             }else{
+                               // Log.v("ACTION",action);
+
                                 if(action.equals("getmutex")){
                                     result = sbuilder.toString();
                                     int posicao = Character.getNumericValue(parametro.charAt(parametro.length()-2));
-                                    opcoes[posicao] = result;
-                                    Log.e("OPCAO", opcoes[posicao]);
+                                    Log.v("POSICAO",""+posicao);
+                                    if(posicao ==-1){
+
+                                    }else {
+                                        opcoes[posicao] = result;
+                                    }
+                                  //  Log.e("OPCAO", opcoes[posicao]);
+                                }else if(action.equals("endgame")){
+                                    TIME = 1000;
+                                    result = sbuilder.toString();
+                                    Log.e("RESULTADO", result);
                                 }
 
 
@@ -469,22 +480,6 @@ public class ConnectionService extends Service {
                 }
             }
         }.start();
-
-    }
-
-    public JSONArray createPerguntasArray(String s){
-        try {
-            JSONObject jsnobject = new JSONObject(s);
-            JSONArray jsonArray = jsnobject.getJSONArray("Perguntas");
-
-            JSONObject x = jsonArray.getJSONObject(0);
-            Log.e("JSON: ", x.toString());
-
-            return jsonArray;
-        }catch (JSONException e){
-            e.printStackTrace();
-            return null;
-        }
 
     }
 

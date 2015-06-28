@@ -30,6 +30,7 @@ public class MenuActivity extends ActionBarActivity {
     boolean mBound = false;
     boolean boolHandler = false;
     String perguntas_string;
+    String enviaPlayer;
 
 
     @Override
@@ -39,59 +40,92 @@ public class MenuActivity extends ActionBarActivity {
         setTitle("QUIZ");
 
         button = (Button) findViewById(R.id.conecta);
+        button.setTag(1);
         player = (EditText) findViewById(R.id.player);
         area_resposta = (TextView) findViewById(R.id.retorno);
-        buttonCancel = (Button) findViewById(R.id.btnCancela);
-        final Button btnResult = (Button) findViewById(R.id.button5);
-        final Intent it = new Intent(this, ConnectionService.class);
 
+      //  final Button btnResult = (Button) findViewById(R.id.button5);
+        final Intent it = new Intent(this, ConnectionService.class);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
+
             public void onClick(View v) {
-                String enviaPlayer = player.getText().toString();
 
-                if (enviaPlayer.equals("")) {
-                    Toast.makeText(MenuActivity.this, "Insira algum nome", Toast.LENGTH_SHORT).show();
-                    return;
+                if(button.getTag().equals(1)) {
+
+                    button.setTag(0);
+                    button.setText("Cancelar");
+                    enviaPlayer = player.getText().toString();
+
+                    if (enviaPlayer.equals("")) {
+                        Toast.makeText(MenuActivity.this, "Insira algum nome", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                  //  btnResult.setEnabled(true);
+                    it.putExtra("playerName", enviaPlayer);
+                    startService(it);
+                    bindService(it, mConnection, Context.BIND_AUTO_CREATE);
+                    mBound = true;
+                    boolHandler = true;
+
+                    new Thread(){
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                Thread.sleep(1000);
+                                connCheck();
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+
+
+                        }
+                    }.start();
+
                 }
-                button.setEnabled(false);
-                buttonCancel.setEnabled(true);
-                btnResult.setEnabled(true);
-                it.putExtra("playerName", enviaPlayer);
-                startService(it);
-                bindService(it, mConnection, Context.BIND_AUTO_CREATE);
-                mBound = true;
-                boolHandler = true;
+                else{
+                    button.setTag(1);
+                    button.setText("Iniciar jogo");
 
-              //  connCheck();
+                    if (mBound) {
+                        unbindService(mConnection);
+                        mBound = false;
+                        boolHandler = false;
+                     //   btnResult.setEnabled(false);
+                    }
+                    stopService(it);
+                }
+
 
             }
         });
 
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
+       /* buttonCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mBound) {
                     unbindService(mConnection);
-                    stopService(it);
                     mBound = false;
                     boolHandler = false;
                     button.setEnabled(true);
                     buttonCancel.setEnabled(false);
                     btnResult.setEnabled(false);
                 }
+                stopService(it);
             }
-        });
+        });*/
 
 
-        btnResult.setOnClickListener(new View.OnClickListener() {
+      /*  btnResult.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 btnResult.setEnabled(false);
                 connCheck();
             }
-        });
+        });*/
     }
 
     @Override
@@ -101,6 +135,7 @@ public class MenuActivity extends ActionBarActivity {
         if (mBound) {
             unbindService(mConnection);
         }
+        stopService(new Intent(MenuActivity.this, ConnectionService.class));
     }
 
     private Handler handler = new Handler() {
@@ -134,7 +169,10 @@ public class MenuActivity extends ActionBarActivity {
                         Message mensagem = new Message();
                         mensagem.what = RESULT;
                         Bundle b = new Bundle();
-                        result = mConn.getResult();
+                        result = "";
+                        if(!mConn.getResult().equals(null)) {
+                            result = mConn.getResult();
+                        }
 
                         perguntas_string = mConn.getPerguntas();
 
@@ -143,14 +181,17 @@ public class MenuActivity extends ActionBarActivity {
                                 resposta = "Problema na conexão";
 
                             } else if (result.equals("ready")) {
+                                mBound = false;
+                                unbindService(mConnection);
                                 resposta = "Inicializando jogo...";
                                 Log.e("STATUS DO JOGO", resposta);
                                 if(perguntas_string!=null)
                                 Log.e("PERGUNTAS STRING", perguntas_string);
                                 boolHandler = false;
-                                Thread.sleep(2000);
                                 Intent it = new Intent(MenuActivity.this, QuestionsActivity.class);
                                 it.putExtra("perguntas_string", perguntas_string);
+                                it.putExtra("playerName",enviaPlayer);
+
                                 startActivity(it);
                             } else if(result.equals("wait")){
                                 resposta = "Aguarde";

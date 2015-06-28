@@ -56,24 +56,17 @@
         android:layout_alignRight="@+id/conecta"
         android:layout_alignEnd="@+id/conecta" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancela"
-        android:id="@+id/btnCancela"
-        android:enabled="false"
-        android:layout_below="@+id/imageView"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
+    <!--
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Result"
         android:id="@+id/button5"
         android:enabled="false"
-        android:layout_alignBottom="@+id/btnCancela"
-        android:layout_toRightOf="@+id/btnCancela"
-        android:layout_toEndOf="@+id/btnCancela" />
+        android:layout_below="@+id/imageView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="83dp"
+        android:layout_marginStart="83dp" /> -->
 
 </RelativeLayout>

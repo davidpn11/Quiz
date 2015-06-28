@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 public class QuizActivity extends ActionBarActivity {
 
-    private final String LOG_TAG = QuizActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,17 +52,6 @@ public class QuizActivity extends ActionBarActivity {
 
                     finish();
 
-
-                   /* button.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
-                    button2.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                    button3.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                    button4.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                    button.setClickable(false);
-                    button2.setClickable(false);
-                    button3.setClickable(false);
-                    button4.setClickable(false);
-                    Toast.makeText(QuizActivity.this, "ERRADO! FECHE PARA TENTAR DE NOVO!", Toast.LENGTH_SHORT).show();*/
-
                 }
             });
 
@@ -96,15 +84,6 @@ public class QuizActivity extends ActionBarActivity {
 
                     finish();
 
-                  /*  button.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                    button2.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                    button3.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
-                    button4.getBackground().setColorFilter(Color.WHITE, PorterDuff.Mode.MULTIPLY);
-                    button.setClickable(false);
-                    button2.setClickable(false);
-                    button3.setClickable(false);
-                    button4.setClickable(false);
-                    Toast.makeText(QuizActivity.this, "RESPOSTA CORRETA!", Toast.LENGTH_SHORT).show();*/
                 }
             });
 
