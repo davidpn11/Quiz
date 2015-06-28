@@ -10,6 +10,7 @@
     android:rowCount="4"
 
 
+
     tools:context="quiz.com.david.quiz.QuestionsActivity">
 
     <TextView
