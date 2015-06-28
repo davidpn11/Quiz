@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -36,6 +37,7 @@ public class QuestionsActivity extends ActionBarActivity {
     String selecionada = "";
     int respondidas = 8;
     int corretas = 0;
+    private MediaPlayer player;
 
 
     @Override
@@ -50,6 +52,8 @@ public class QuestionsActivity extends ActionBarActivity {
         int x = 4;
         gridLayout.setRowCount(x);
         close_app = (Button) findViewById(R.id.close_app);
+        player = MediaPlayer.create(this,R.raw.elcuartodetula);
+        player.start();
 
         close_app.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -88,6 +92,7 @@ public class QuestionsActivity extends ActionBarActivity {
         if (mBound) {
             unbindService(mConnection);
         }
+        player.stop();
     }
 
 
