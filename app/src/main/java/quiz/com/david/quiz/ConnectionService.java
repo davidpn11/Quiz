@@ -22,7 +22,7 @@ public class ConnectionService extends Service {
     public ConnectionService() {
     }
     String stringUrl = "";
-    String IDurl = "http://192.168.0.10:8888/Final/S1/serverID.php";
+    String IDurl = "http://10.0.3.2:8888/Final/S1/serverID.php";
     private final IBinder mBinder = new LocalBinder();
     String result = "wait";
     String retorno;
@@ -49,7 +49,7 @@ public class ConnectionService extends Service {
             "\t\"pergunta\":\"What's the word for 'Friend', 'Buddy' in Cuban Spanish?\",\n" +
             "\t\"op1\":\"Asere\",\n" +
             "\t\"op2\":\"Amigo\",\n" +
-            "\t\"op3\":\"Che\",\n" +
+            "\t\"op3\":\"Che\",\n" +Paris Beauvais-Tille
             "\t\"op4\":\"Companero\",\n" +
             "\t\"answer\":\"3\"\n" +
             "},\n" +
@@ -435,7 +435,7 @@ public class ConnectionService extends Service {
                                         Log.e("RESULTADO VAZIO", "");
                                         throw new Exception("Resultado vazio");
                                     } else if (result.equals("ready")) {
-                                        TIME = 100;
+                                        TIME = 400;
                                         Playing = true;
                                     }
 

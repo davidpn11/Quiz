@@ -34,6 +34,7 @@ public class QuestionsActivity extends ActionBarActivity {
     ConnectionService mConn;
     protected static final int RESULT = 1;
     boolean mBound = false;
+    boolean waiting = true;
     String selecionada = "";
     int respondidas = 8;
     int corretas = 0;
@@ -92,6 +93,7 @@ public class QuestionsActivity extends ActionBarActivity {
         if (mBound) {
             unbindService(mConnection);
         }
+        waiting = false;
         player.stop();
     }
 
@@ -149,6 +151,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -200,6 +203,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -250,6 +254,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -300,6 +305,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -345,11 +351,12 @@ public class QuestionsActivity extends ActionBarActivity {
                         Toast.makeText(QuestionsActivity.this, "Pergunta Bloqueada!", Toast.LENGTH_SHORT).show();
 
                     } else if(livre.equals("close")){
-                        respondidas++;
+                        respondidas--;
                         Toast.makeText(QuestionsActivity.this, "Pergunta Respondida!", Toast.LENGTH_SHORT).show();
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -398,6 +405,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -448,6 +456,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -498,6 +507,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         btntemp.setBackgroundResource(R.drawable.round_errado);
                         btntemp.setImageResource(R.drawable.errada);
                         btntemp.setClickable(false);
+                        checaEndGame();
 
                     } else{
                         Toast.makeText(QuestionsActivity.this, "RESULT ANTIGO!", Toast.LENGTH_SHORT).show();
@@ -553,8 +563,8 @@ public class QuestionsActivity extends ActionBarActivity {
 
 
     public void checaEndGame(){
-        Log.e("RESPONDIDAS", "" + respondidas);
-
+        Log.e("RESPONDIDAS", "-------------------------RESPONDIDAS=>> " + respondidas);
+       // Toast.makeText(QuestionsActivity.this, "RESPONDIDAS->"+respondidas, Toast.LENGTH_SHORT).show();
         if(respondidas == 0){
 
             new Thread() {
@@ -582,7 +592,7 @@ public class QuestionsActivity extends ActionBarActivity {
                         });
 
 
-                        boolean waiting = true;
+
                         String resultado,resposta;
                         Message mensagem = new Message();
                         Bundle b = new Bundle();
@@ -592,7 +602,7 @@ public class QuestionsActivity extends ActionBarActivity {
                             resultado = mConn.getResult();
                             Log.e("WAITING", "-----Resultado:"+resultado+"--------------");
 
-                            if(!resultado.equals("aguarde") && !resultado.equals("block")){
+                            if(!resultado.equals("aguarde") && !resultado.equals("block") && !resultado.equals("close")){
 
                                 waiting = false;
 
